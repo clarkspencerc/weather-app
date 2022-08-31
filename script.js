@@ -7,10 +7,12 @@ $('#search-button').on("click", function() {
     console.log(searchValue);
     //searchWeather(searchValue);
     geocode(searchValue);
-    saveSearches(searchValue);
-    // loadSearched(); 
-    // autofill(); 
+    
+    saveSearches(searchValue); 
+    loadSearched();
 });
+
+
 
 
 // Function to search for weather
@@ -33,23 +35,24 @@ function searchWeather(lat, lon) {
         method: "GET"
     }).then(function (response) {
         console.log(response);
+        $("#todayweather").empty();
+        var coloruv = response.current.uvi; 
+        var classtype =""; 
+
+        if(coloruv > 6) {
+            classtype= "btn-danger"
+        } else if (coloruv > 4){
+            classtype = "btn-warning"
+        } else {
+            classtype = "btn-success"
+        };
+
         var temp = ("<h2>" + "Current temp: " + response.current.temp + "F" + "</h2>");
         var humidity = ("<h2>" + "Current humidity: " + response.current.humidity + "%" + "</h2>");
         var wind = ("<h2>" + "Current wind: " + response.current.wind_speed + " mph" + "</h2>");
-        var uvindex = ("<h2>" + "Current UV index: " + response.current.uvi + "</h2>");
-    
-
-        // if uvi is less than 3 , give button of success (green)
-        // if uvi is less than 6 , give button of warning (yellow)
-        // if uvi is less than 8 , give button of danger (red)
+        var uvindex = (`<button class="${classtype}">` + "Current UV index: " + response.current.uvi + "</button>");
         
-        // if (uvindex > 6) {
-        //     card.addClass("red")
-        // } else if (uvindex > 4) {
-        //     card.addClass("yellow")
-        // } else {
-        //     card.addClass("green")
-        // };
+
     var card = $("<div>").addClass("card").append(temp, humidity, wind, uvindex);
         $("#todayweather").append(card);
     });
@@ -62,22 +65,16 @@ function forcastWeather(lat, lon) {
         method: "GET"
     }).then(function (response) {
         console.log(response);
-        for(var i = 0; i < response.daily.length; i++) {
-        var forcastedDay = ("<h1>" + "Date" + response.daily[i].dt + "day" + "</h1>");
+        for(var i = 1; i < response.daily.length -2; i++) {
+        var forcastedDay = ("<h1>" + moment.unix(response.daily[i].dt).format("dddd") + "</h1>");
         var currenttemp = ("<h2>" +"Forcasted temp: " + response.daily[i].temp.day + " F" + "</h2>");
         var wind = ("<h2>" + "Wind: " + response.daily[i].wind_speed + " mph" + "</h2>");
         var humidity = ("<h2>" + "Humidity: " + response.daily[i].humidity + "%" + "</h2>");
-        var uvindex = ("<h2>" + " UV index: " + response.daily[i].uvi + "</h2>");
+        var uvindex = ("<h2>" +" UV index: " + response.daily[i].uvi + "</h2>");
 
-       
+           
 
-        // if(uvindex > 6) {
-        //     card.addClass("red")
-        // } else if (uvindex > 4){
-        //     card.addClass("yellow")
-        // } else {
-        //     card.addClass("green")
-        // };
+        
 
         var card = $("<div>").addClass("card").append(forcastedDay, currenttemp, wind, humidity, uvindex); 
         $("#fiveforecast").append(card);
@@ -88,7 +85,7 @@ function forcastWeather(lat, lon) {
 
 // create local storage function pass in searchvalue field 
 let saveSearches = function (searchValue) {
-    localStorage.setItem("searches", searched);
+
     if (searchValue !== "") {
         
         // only adds new searches - prevents duplicates in local storage
@@ -106,11 +103,14 @@ let saveSearches = function (searchValue) {
 let loadSearched = function () {
     searched = localStorage.getItem("searches")
     searched = JSON.parse(searched);
+    $(".history ").empty();
    if(searched.length > 0) {
         for (var i = 0; i < searched.length; i++) {
-            var searchedCity = ("<h2>" + searchedCity[i] + "</h2>");
+
+            var searchedCity = ("<li><button>" + searched[i] + "</button></li>");
+            //$(".history").on("click", function () { geocode(searched[i])});
         
-            var btn = $("<button>").addClass("btn").append(btn);
+            var card = $("<div>").addClass("btn").append(searchedCity);
             $(".history").append(card);
 
         }
@@ -118,16 +118,6 @@ let loadSearched = function () {
     return searched;
 };
 
-let autofill = function () {
-
-    if (localStorage.getItem("searches")) {
-        $("#search-value").autocomplete({
-            source: loadSearched()
-        }, {
-            autoFocus: true,
-            delay: 0
-        });
-    }
-
-
-};
+if(searched.length > 0){
+loadSearched(); 
+}
