@@ -15,7 +15,7 @@ How to interact with a 3rd party API to return the desired results. I also imple
 
 
 ## Link to deployed app
-
+[Deployed App](https://clarkspencerc.github.io/weather-app/)
 ## Screenshot
 ![weather app screenshot](/assets/img/weather.png)
 

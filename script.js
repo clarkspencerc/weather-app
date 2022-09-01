@@ -17,7 +17,7 @@ $('#search-button').on("click", function() {
 
 // Function to search for weather
 function geocode(searchValue) {
-    var queryURL = `https://api.openweathermap.org/geo/1.0/direct?q=${searchValue}&appid=501e095823f225748a2af769f77fc9de`;
+    var queryURL = `http://api.openweathermap.org/geo/1.0/direct?q=${searchValue}&appid=501e095823f225748a2af769f77fc9de`;
     $.ajax({
         url: queryURL,
         method: "GET"
