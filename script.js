@@ -46,14 +46,14 @@ function searchWeather(lat, lon) {
         } else {
             classtype = "btn-success"
         };
-
-        var temp = ("<h2>" + "Current temp: " + response.current.temp + "F" + "</h2>");
-        var humidity = ("<h2>" + "Current humidity: " + response.current.humidity + "%" + "</h2>");
-        var wind = ("<h2>" + "Current wind: " + response.current.wind_speed + " mph" + "</h2>");
+        var day = ("<h1>" + moment.unix(response.current.dt).format('MMM Do YYYY') + "</h1>");
+        var temp = ("<h4>" + "Current temp: " + response.current.temp + "F" + "</h4>");
+        var humidity = ("<h4>" + "Current humidity: " + response.current.humidity + "%" + "</h4>");
+        var wind = ("<h4>" + "Current wind: " + response.current.wind_speed + " mph" + "</h4>");
         var uvindex = (`<button class="${classtype}">` + "Current UV index: " + response.current.uvi + "</button>");
         
 
-    var card = $("<div>").addClass("card").append(temp, humidity, wind, uvindex);
+    var card = $("<div>").addClass("card").append(day, temp, humidity, wind, uvindex);
         $("#todayweather").append(card);
     });
 }
@@ -63,14 +63,16 @@ function forcastWeather(lat, lon) {
     $.ajax({
         url: queryURL,
         method: "GET"
+        
     }).then(function (response) {
         console.log(response);
+        $("#fiveforecast").empty();
         for(var i = 1; i < response.daily.length -2; i++) {
-        var forcastedDay = ("<h1>" + moment.unix(response.daily[i].dt).format("dddd") + "</h1>");
-        var currenttemp = ("<h2>" +"Forcasted temp: " + response.daily[i].temp.day + " F" + "</h2>");
-        var wind = ("<h2>" + "Wind: " + response.daily[i].wind_speed + " mph" + "</h2>");
-        var humidity = ("<h2>" + "Humidity: " + response.daily[i].humidity + "%" + "</h2>");
-        var uvindex = ("<h2>" +" UV index: " + response.daily[i].uvi + "</h2>");
+        var forcastedDay = ("<h1>" + moment.unix(response.daily[i].dt).format("MMM Do YYYY") + "</h1>");
+        var currenttemp = ("<h4>" +"Forcasted temp: " + response.daily[i].temp.day + " F" + "</h4>");
+        var wind = ("<h4>" + "Wind: " + response.daily[i].wind_speed + " mph" + "</h4>");
+        var humidity = ("<h4>" + "Humidity: " + response.daily[i].humidity + "%" + "</h4>");
+        var uvindex = ("<h4>" +" UV index: " + response.daily[i].uvi + "</h4>");
 
            
 
@@ -107,16 +109,45 @@ let loadSearched = function () {
    if(searched.length > 0) {
         for (var i = 0; i < searched.length; i++) {
 
-            var searchedCity = ("<li><button>" + searched[i] + "</button></li>");
-            //$(".history").on("click", function () { geocode(searched[i])});
+            var searchedCity = ("<li><button class='btn-dark'>" + searched[i] + "</button></li>");
         
-            var card = $("<div>").addClass("btn").append(searchedCity);
-            $(".history").append(card);
+        var card = $("<div>").addClass("btn btn-dark").append(searchedCity);
+        card.attr('id', `${searched[i]}`);
+        $(".history").append(card);
+
+            $('.history').on("click", function () {
+                // var searchValue = $('#search-value').val();
+                // searchValue.value = searched[i];
+                // console.log(searchValue);
+        // cityName = this.id; 
+        // console.log(cityName);
+        // var searchValue = $(this).children('li').text();
+        // console.log("========");
+        // console.log(searchValue);
+        // console.log("========");
+        // geocode(searchValue);
+        
+        // console.log(event.name);
+        // console.log("++++++++++++"); 
+        // console.log(searched[i].searchValue);
+          $("#todayweather").empty();
+        $("#fiveforecast").empty();
+          geocode(searched[i]); 
+        
+        });
 
         }
+        
     }
-    return searched;
+
 };
+
+// $('.history').on("click", function(){
+//     var t = $(this).attr('id');
+//     console.log(t);
+    
+// });
+
 
 if(searched.length > 0){
 loadSearched(); 
